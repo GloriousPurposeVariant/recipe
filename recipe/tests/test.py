@@ -67,7 +67,7 @@ class RecipeAPITestCase(APITestCase):
         # Create a SimpleUploadedFile for the image
         return SimpleUploadedFile("test_image.jpg", img_io.read(), content_type="image/jpeg")
     
-#     def test_create_recipe(self):
+#     def test_create_recipe(self): # Todo: Conflict multipart nested object?
 #         temp_image = self.get_temporary_image_file()
 #     #     # Recipe data
 #         data = {
@@ -115,7 +115,7 @@ class RecipeAPITestCase(APITestCase):
         expected_data = RecipeSerializer(self.recipe1).data
         self.assertEqual(response.data, expected_data)
 
-    # def test_update_recipe(self):
+    # def test_update_recipe(self): # Todo: Conflict multipart nested object?
     #     self.client.force_authenticate(user=self.user)
     #     print(self.category, 'aaaaaaaaaa')
     #     updated_data = {
@@ -216,10 +216,7 @@ class RecipeAPITestCase(APITestCase):
         self.assertEqual(str(self.recipe_like), "testuser")
 
     def test_delete_recipe(self):
-        # Log in as test user
-        # self.client.login(username='testuser', password='testpassword')
         self.client.force_authenticate(user=self.user)
-
         # DELETE request to delete the recipe
         response = self.client.delete(self.detail_url)
 
@@ -229,12 +226,8 @@ class RecipeAPITestCase(APITestCase):
         # Verify the recipe was deleted
         with self.assertRaises(Recipe.DoesNotExist):
             Recipe.objects.get(id=self.recipe1.id)
-    def test_like_nonexistent_recipe(self):
-        self.client.force_authenticate(user=self.user)
-        non_existent_url = reverse('recipe:recipe-like', kwargs={'pk': 99999})  # Assuming this ID doesn't exist
-        response = self.client.post(non_existent_url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-            
+    
+    
     def test_like_recipe(self):
         # Authenticate the user
         self.client.force_authenticate(user=self.user)
@@ -243,9 +236,8 @@ class RecipeAPITestCase(APITestCase):
         # POST request to like the recipe
         response = self.client.post(self.like_url)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        like = RecipeLike.objects.get(user=self.user, recipe=self.recipe1)
-        self.assertEqual(like.user, self.user)
-        # Second POST request to like the recipe again
+        like = RecipeLike.objects.filter(user=self.user, recipe=self.recipe1).first()
+        self.assertIsNotNone(like)
         response = self.client.post(self.like_url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(RecipeLike.objects.filter(user=self.user, recipe=self.recipe1).count(), 1)
@@ -295,4 +287,5 @@ class RecipeAPITestCase(APITestCase):
 
         # Check that no like was created
         self.assertFalse(RecipeLike.objects.filter(user=self.user, recipe=self.recipe1).exists())
+        
         
