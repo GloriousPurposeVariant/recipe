@@ -6,14 +6,18 @@ from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Celery config
+CELERY_BROKER_URL = config('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY')
-
-
+# DJANGO_SETTINGS_MODULE = "config.settings.development"
+# for test case run with coverage
 # Application definition
 
 INSTALLED_APPS = [

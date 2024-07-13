@@ -12,12 +12,15 @@ services:
       - .env
     depends_on:
       - db
+      - redis
     environment:
       - DB_NAME=${DB_NAME}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_HOSTNAME=${DB_HOSTNAME}
       - DB_PORT=${DB_PORT}
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+
 
   db:
     image: postgres:13
@@ -33,6 +36,30 @@ services:
       test: ["CMD", "pg_isready", "-U", "${DB_USERNAME}", "-d", "${DB_NAME}"]
       interval: 5s
       retries: 5
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  celery:
+    build: .
+    command: celery -A config.celery worker -l info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    environment:
+      - DB_NAME=${DB_NAME}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOSTNAME=${DB_HOSTNAME}
+      - DB_PORT=${DB_PORT}
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+
+
 
 volumes:
   postgres_data:
