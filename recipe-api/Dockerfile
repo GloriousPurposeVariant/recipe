@@ -29,5 +29,8 @@ RUN chown -R myuser:myuser /app
 # Switch to the new user
 USER myuser
 
+# Create logs directory
+RUN mkdir -p /app/logs && chown -R myuser:myuser /app/logs
+
 # Set default entrypoint
 ENTRYPOINT ["/app/entrypoint.sh"]
