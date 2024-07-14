@@ -121,6 +121,12 @@ Replace `<your-ec2-public-ip>` with your EC2 instance's public IP.
 
 ---
 
+## Test cases
+`DJANGO_SETTINGS_MODULE=config.settings.development coverage run -m pytest path/to/test.py`
+
+# For report
+`coverage html`
+
 ### Outstanding Issues
 
 - **Server Hosting**: The application faces issues when hosted on the server.
