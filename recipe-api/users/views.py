@@ -15,7 +15,7 @@ from recipe.models import Recipe
 from .models import Profile
 from recipe.serializers import RecipeSerializer
 from . import serializers
-from .tasks import notify_userlogin_creation, send_daily_mail_like_count
+from .tasks import send_daily_mail_like_count
 import logging
 
 logger = logging.getLogger("users")
@@ -51,9 +51,8 @@ class UserLoginAPIView(GenericAPIView):
     serializer_class = serializers.UserLoginSerializer
 
     def post(self, request, *args, **kwargs):
-        # send_daily_mail_like_count.delay()
         logger.info('User attempting to sign in with email: %s', request.data.get('email'))
-
+        send_daily_mail_like_count.delay()
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
@@ -62,7 +61,6 @@ class UserLoginAPIView(GenericAPIView):
         token = RefreshToken.for_user(user)
         data = serializer.data
         data["tokens"] = {"refresh": str(token), "access": str(token.access_token)}
-        notify_userlogin_creation.delay(1, data)
         return Response(data, status=status.HTTP_200_OK)
 
 

@@ -3,8 +3,7 @@ version: '3.8'
 services:
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
-    # command: gunicorn --bind 0.0.0.0:8000 myproject.wsgi:application
+    command: gunicorn --bind 0.0.0.0:8000 config.wsgi:application
     volumes:
       - .:/app
       - ./logs:/app/logs
@@ -22,6 +21,7 @@ services:
       - DB_HOSTNAME=${DB_HOSTNAME}
       - DB_PORT=${DB_PORT}
       - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
 
 
   db:
