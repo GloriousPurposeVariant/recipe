@@ -1,4 +1,4 @@
-Here's a sample README file for setting up your app in a production environment on an EC2 server:
+README file for setting up your app in a production environment on an EC2 server:
 
 ---
 
