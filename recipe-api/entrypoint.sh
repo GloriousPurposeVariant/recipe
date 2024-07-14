@@ -16,10 +16,6 @@ python manage.py migrate
 # Collect static files
 python manage.py collectstatic --noinput
 
-# Create a superuser if not already exists
-echo "Creating superuser..."
-python manage.py create_superuser
-
 
 # Execute the command passed as arguments or run the development server as default
 exec "$@" 
