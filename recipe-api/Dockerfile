@@ -30,7 +30,7 @@ RUN chown -R myuser:myuser /app
 USER myuser
 
 # Create logs directory
-RUN mkdir -p /app/logs && chown -R myuser:myuser /app/logs
+RUN mkdir -p /app/logs && chown -R myuser:myuser /app/logs && chmod 755 /app/logs
 
 # Set default entrypoint
 ENTRYPOINT ["/app/entrypoint.sh"]
