@@ -1,3 +1,7 @@
+from pathlib import Path
+
+LOG_PATH = Path(__file__).resolve().parent.parent.parent
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -15,15 +19,15 @@ LOGGING = {
         'file': {
             'level': 'INFO',  
             'class': 'logging.FileHandler',
-            'filename': 'logs/django_execution.log', 
+            'filename': f'{LOG_PATH}/logs/django_execution.log', 
             'formatter': 'verbose',
         },
-        # 'error_file': {
-        #     'level': 'WARNING',  
-        #     'class': 'logging.FileHandler',
-        #     'filename': 'logs/django_errors.log',  
-        #     'formatter': 'verbose',
-        # },
+        'error_file': {
+            'level': 'WARNING',  
+            'class': 'logging.FileHandler',
+            'filename': f'{LOG_PATH}/logs/django_errors.log',  
+            'formatter': 'verbose',
+        },
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
