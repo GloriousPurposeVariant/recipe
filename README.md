@@ -139,5 +139,3 @@ Replace `<your-ec2-public-ip>` with your EC2 instance's public IP.
 - **Logging Framework**: Implemented logging which works fine in the local Docker container.
 
 ---
-
-You can copy and paste this Markdown content into your email client or documentation tool that supports Markdown formatting.
