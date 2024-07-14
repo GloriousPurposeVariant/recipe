@@ -18,12 +18,12 @@ LOGGING = {
             'filename': 'logs/django_execution.log', 
             'formatter': 'verbose',
         },
-        'error_file': {
-            'level': 'WARNING',  
-            'class': 'logging.FileHandler',
-            'filename': 'logs/django_errors.log',  
-            'formatter': 'verbose',
-        },
+        # 'error_file': {
+        #     'level': 'WARNING',  
+        #     'class': 'logging.FileHandler',
+        #     'filename': 'logs/django_errors.log',  
+        #     'formatter': 'verbose',
+        # },
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
