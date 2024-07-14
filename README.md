@@ -134,7 +134,7 @@ Replace `<your-ec2-public-ip>` with your EC2 instance's public IP.
 ### Progress Made
 
 - **Docker Integration**: Successfully containerized the application, and it works locally.
-- **Testing and Coverage Report**: Comprehensive test cases written for almost all scenarios except for multi-type fields in create and update recipe APIs.
+- **Testing and Coverage Report**: Comprehensive test cases written for almost all scenarios except for multipart format for create and update recipe APIs.
 - **Asynchronous Task Handling with Celery**: Implemented Celery for handling asynchronous tasks and tried integrating Celery Beat for daily scheduled tasks.
 - **Logging Framework**: Implemented logging which works fine in the local Docker container.
 
