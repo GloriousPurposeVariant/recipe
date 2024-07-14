@@ -30,7 +30,14 @@ RUN chown -R myuser:myuser /app
 USER myuser
 
 # Create logs directory
-RUN mkdir -p /app/logs && chown -R myuser:myuser /app/logs && chmod 755 /app/logs
+RUN mkdir -p /app/logs && \
+    touch /app/logs/django_errors.log && \
+    touch /app/logs/django_execution.log && \
+    chown -R myuser:myuser /app/logs && \
+    chmod 755 /app/logs && \
+    chmod 666 /app/logs/django_errors.log && \
+    chmod 666 /app/logs/django_execution.log
+
 
 # Set default entrypoint
 ENTRYPOINT ["/app/entrypoint.sh"]
