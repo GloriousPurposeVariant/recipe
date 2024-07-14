@@ -1,7 +1,3 @@
-README file for setting up your app in a production environment on an EC2 server:
-
----
-
 # Recipe API Setup Guide
 
 This guide will walk you through the steps to set up the Recipe API application in a production environment on an EC2 instance.
