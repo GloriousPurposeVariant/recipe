@@ -1,7 +1,12 @@
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.generics import GenericAPIView, ListCreateAPIView, RetrieveUpdateAPIView, UpdateAPIView
+from rest_framework.generics import (
+    GenericAPIView,
+    ListCreateAPIView,
+    RetrieveUpdateAPIView,
+    UpdateAPIView,
+)
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
@@ -10,6 +15,10 @@ from recipe.models import Recipe
 from .models import Profile
 from recipe.serializers import RecipeSerializer
 from . import serializers
+from .tasks import notify_userlogin_creation, send_daily_mail_like_count
+import logging
+
+logger = logging.getLogger("users")
 
 
 User = get_user_model()
@@ -17,8 +26,9 @@ User = get_user_model()
 
 class UserRegisterationAPIView(GenericAPIView):
     """
-    An endpoint for the client to create a new User. 
+    An endpoint for the client to create a new User.
     """
+
     permission_classes = (AllowAny,)
     serializer_class = serializers.UserRegisterationSerializer
 
@@ -28,10 +38,7 @@ class UserRegisterationAPIView(GenericAPIView):
         user = serializer.save()
         token = RefreshToken.for_user(user)
         data = serializer.data
-        data['tokens'] = {
-            'refresh': str(token),
-            'access': str(token.access_token)
-        }
+        data["tokens"] = {"refresh": str(token), "access": str(token.access_token)}
         return Response(data, status=status.HTTP_201_CREATED)
 
 
@@ -39,20 +46,23 @@ class UserLoginAPIView(GenericAPIView):
     """
     An endpoint to authenticate existing users using their email and password.
     """
+
     permission_classes = (AllowAny,)
     serializer_class = serializers.UserLoginSerializer
 
     def post(self, request, *args, **kwargs):
+        # send_daily_mail_like_count.delay()
+        logger.info('User attempting to sign in with email: %s', request.data.get('email'))
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
+        logger.info("User signed in: %s", user.email)
         serializer = serializers.CustomUserSerializer(user)
         token = RefreshToken.for_user(user)
         data = serializer.data
-        data['tokens'] = {
-            'refresh': str(token),
-            'access': str(token.access_token)
-        }
+        data["tokens"] = {"refresh": str(token), "access": str(token.access_token)}
+        notify_userlogin_creation.delay(1, data)
         return Response(data, status=status.HTTP_200_OK)
 
 
@@ -60,6 +70,7 @@ class UserLogoutAPIView(GenericAPIView):
     """
     An endpoint to logout users.
     """
+
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
@@ -76,6 +87,7 @@ class UserAPIView(RetrieveUpdateAPIView):
     """
     Get, Update user information
     """
+
     permission_classes = (IsAuthenticated,)
     serializer_class = serializers.CustomUserSerializer
 
@@ -87,6 +99,7 @@ class UserProfileAPIView(RetrieveUpdateAPIView):
     """
     Get, Update user profile
     """
+
     queryset = Profile.objects.all()
     serializer_class = serializers.ProfileSerializer
     permission_classes = (IsAuthenticated,)
@@ -99,6 +112,7 @@ class UserAvatarAPIView(RetrieveUpdateAPIView):
     """
     Get, Update user avatar
     """
+
     queryset = Profile.objects.all()
     serializer_class = serializers.ProfileAvatarSerializer
     permission_classes = (IsAuthenticated,)
@@ -111,19 +125,20 @@ class UserBookmarkAPIView(ListCreateAPIView):
     """
     Get, Create, Delete favorite recipe
     """
+
     serializer_class = RecipeSerializer
     permission_classes = (IsAuthenticated,)
     profile = Profile.objects.all()
 
     def get_queryset(self):
-        user = User.objects.get(id=self.kwargs['pk'])
+        user = User.objects.get(id=self.kwargs["pk"])
         user_profile = get_object_or_404(self.profile, user=user)
         return user_profile.bookmarks.all()
 
     def post(self, request, pk):
         user = User.objects.get(id=pk)
         user_profile = get_object_or_404(self.profile, user=user)
-        recipe = Recipe.objects.get(id=request.data['id'])
+        recipe = Recipe.objects.get(id=request.data["id"])
         if user_profile:
             user_profile.bookmarks.add(recipe)
             return Response(status=status.HTTP_200_OK)
@@ -132,7 +147,7 @@ class UserBookmarkAPIView(ListCreateAPIView):
     def delete(self, request, pk):
         user = User.objects.get(id=pk)
         user_profile = get_object_or_404(self.profile, user=user)
-        recipe = Recipe.objects.get(id=request.data['id'])
+        recipe = Recipe.objects.get(id=request.data["id"])
         if user_profile:
             user_profile.bookmarks.remove(recipe)
             return Response(status=status.HTTP_200_OK)
@@ -143,6 +158,7 @@ class PasswordChangeAPIView(UpdateAPIView):
     """
     Change password view for authenticated user
     """
+
     permission_classes = (IsAuthenticated,)
     serializer_class = serializers.PasswordChangeSerializer
 

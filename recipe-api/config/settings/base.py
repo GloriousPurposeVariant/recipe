@@ -2,14 +2,17 @@ from pathlib import Path
 import os
 from datetime import timedelta
 from decouple import config
+from celery.schedules import crontab
+from .logging import *
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Celery config
 CELERY_BROKER_URL = config('CELERY_BROKER_URL', 'redis://localhost:6379/0')
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_TASK_SERIALIZER = 'json'
+# CELERY_BROKER_URL = 'redis://localhost:6379/0'
+accept_content = ['json']
+task_serializer = 'json'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -35,6 +38,8 @@ INSTALLED_APPS = [
     'django_filters',
     'drf_spectacular',
     'django_rest_passwordreset',
+    'django_celery_beat',
+    # 'django_celery_results',
 
     # Local apps
     'users',
@@ -88,6 +93,15 @@ DATABASES = {
     }
 }
 
+broker_connection_retry_on_startup = True
+beat_schedule = {
+    'run-daily-mail-sent': {
+        'task': 'users.tasks.send_daily_mail_like_count',
+        'schedule': crontab(hour=10, minute=12),
+    },
+}
+
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -125,7 +139,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 

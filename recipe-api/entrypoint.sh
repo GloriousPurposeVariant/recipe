@@ -16,13 +16,11 @@ python manage.py migrate
 # Collect static files
 python manage.py collectstatic --noinput
 
-
-# Start Redis server
-redis-server &
-
-# Start Celery worker
-celery -A config.celery worker -l info &
+# Create a superuser if not already exists
+echo "Creating superuser..."
+python manage.py create_superuser
 
 
-# Execute the command passed as arguments or run Gunicorn as default
-exec "$@" || exec gunicorn --bind 0.0.0.0:8000 myproject.wsgi:application
+# Execute the command passed as arguments or run the development server as default
+exec "$@" 
+

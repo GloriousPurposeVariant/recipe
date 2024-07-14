@@ -17,18 +17,17 @@ RUN pip install -r requirements.txt
 COPY . /app/
 
 # Copy entrypoint scripts
-COPY entrypoint.dev.sh /app/
-COPY entrypoint.prod.sh /app/
+COPY entrypoint.sh /app/
 
 # Create a non-root user
 RUN useradd -ms /bin/bash myuser
 
 # Set permissions and ownership
-RUN chmod +x /app/entrypoint.dev.sh /app/entrypoint.prod.sh
+RUN chmod +x /app/entrypoint.sh
 RUN chown -R myuser:myuser /app
 
 # Switch to the new user
 USER myuser
 
 # Set default entrypoint
-ENTRYPOINT ["/app/entrypoint.dev.sh"]
+ENTRYPOINT ["/app/entrypoint.sh"]
