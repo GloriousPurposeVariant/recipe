@@ -6,15 +6,7 @@ from .models import CustomUser
 from recipe.models import Recipe
 
 
-
-@shared_task(bind=True)
-def notify_userlogin_creation(self, recipe_id, data):
-    # Here you can implement logic to notify users or log recipe creation
-    time.sleep(15)
-    print("login asdadad", data)
-    print(f'Recipe {recipe_id} has been created.')  # Replace with actual logic
-    
-@shared_task(bind=True)
+@shared_task(bind=True) #TODO Fix me (raises all alone warning)
 def send_daily_mail_like_count(self):
     """
     Sends daily emails to each author with the like counts for their recipes.

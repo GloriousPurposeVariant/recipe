@@ -21,6 +21,7 @@ services:
       - DB_HOSTNAME=${DB_HOSTNAME}
       - DB_PORT=${DB_PORT}
       - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
 
 
   db:
