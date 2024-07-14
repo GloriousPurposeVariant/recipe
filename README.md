@@ -124,7 +124,7 @@ Replace `<your-ec2-public-ip>` with your EC2 instance's public IP.
 ### Outstanding Issues
 
 - **Server Hosting**: The application faces issues when hosted on the server.
-- **Celery Configuration Issues**: Problems with Celery configuration, possibly related to the server environment.
+- **Celery Configuration Issues**: Problems with Celery configuration for Beat. Celery works fine for delay tasks.
 - **Logs Fail on Server**: Logging works locally but fails on the server.
 
 ### Progress Made
